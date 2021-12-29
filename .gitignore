@@ -113,7 +113,6 @@ coverage.xml
 README_future_plans.md
 
 
-*.ipynb
 
 # ipynb checkpoints
 */.ipynb_checkpoints/*
