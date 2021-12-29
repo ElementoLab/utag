@@ -1,0 +1,122 @@
+# project specific
+processed/
+results/
+manuscript/
+data/
+lib/
+
+
+# ignore test files
+.tox
+_version.py
+pytest.log
+.coverage*
+
+# Build-related stuff
+build/
+dist/
+*.egg-info
+
+
+# data files
+*.mcd
+*.h5
+*.h5ad
+*.gmt
+*.tiff
+*.tif
+*.mcd
+*.npz
+# *.csv
+*.pq
+
+# toy/experimental files
+*.txt
+*.tsv
+*.pkl
+*.xlsx
+*.pickle
+*.svg
+*.png
+*.jpg
+*.jpeg
+*.pdf
+
+# ignore mypy
+.mypy*
+
+# ignore eggs
+.eggs/
+
+# ignore built docs
+doc/build/*
+
+# generic ignore list:
+*.lst
+
+# Compiled source
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.pyc
+
+# Packages
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Sublime files
+*.sublime-*
+
+# Gedit temporary files
+*~
+
+# libreoffice lock files:
+.~lock*
+
+# IDE-specific items
+.idea/
+
+# pytest-related
+.cache/
+.coverage*
+coverage.xml
+
+# Reserved files for comparison
+*RESERVE*
+
+# Self Note
+README_future_plans.md
+
+
+*.ipynb
+
+# ipynb checkpoints
+*/.ipynb_checkpoints/*
+
+# pycache files
+gatdu/__pycache__
