@@ -20,15 +20,6 @@
   - matplotlib
   - tqdm
 
-#### Install
-
-```bash
-#git clone https://github.com/afrendeiro/gatdu.git
-git clone -b dev https://github.com/afrendeiro/gatdu.git
-cd gatdu
-pip install --editable .
-```
-
 #### Usage Principles
 
 GATDU repository input requires an AnnData `adata` with preprocessed expression profiles in `adata.X` and spatial coordinates stored in `adata.obsm['spatial']`.
