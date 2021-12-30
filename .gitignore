@@ -113,9 +113,11 @@ coverage.xml
 README_future_plans.md
 
 
+data/
+figures/
 
 # ipynb checkpoints
-*/.ipynb_checkpoints/*
+*/.ipynb_checkpoints/
 
 # pycache files
 gatdu/__pycache__
