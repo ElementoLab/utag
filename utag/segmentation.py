@@ -51,6 +51,8 @@ def utag(
         Default is "Slide".
     save_key: str
         Key to be added to adata object holding the UTAG clusters.
+        Depending on the values of `clustering_method` and `resolutions`,
+        the final keys will be of the form: {save_key}_{method}_{resolution}".
         Default is "UTAG Label".
     filter_by_variance: bool
         Whether to filter vairiables by variance.
