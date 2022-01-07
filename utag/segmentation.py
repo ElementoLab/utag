@@ -13,7 +13,7 @@ import anndata
 from utag.types import Path, Array, AnnData
 
 
-def UTAG(
+def utag(
     adata: AnnData,
     channels_to_use: tp.Sequence[str] = None,
     slide_key: tp.Optional[str] = "Slide",
