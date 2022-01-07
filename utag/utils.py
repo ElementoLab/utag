@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Helped function used throughout the package.
+Helper functions used throughout the package.
 """
 
 import typing as tp
@@ -12,6 +12,7 @@ import pandas as pd
 import networkx as nx
 
 from utag.types import Array, Graph, DataFrame, Path, AnnData
+
 
 def domain_connectivity(
     adata: AnnData,

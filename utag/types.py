@@ -9,20 +9,16 @@ import os
 import typing as tp
 import pathlib
 
-import matplotlib
-from matplotlib.figure import Figure as _Figure
+
 import numpy
 import pandas
-import skimage
-import skimage.future
-import networkx
 import anndata
+import networkx
+import matplotlib
+from matplotlib.figure import Figure as _Figure
+
 
 __all__ = [
-    "Shape",
-    "Shape2D",
-    "Shape3D",
-    "Shape4D",
     "Array",
     "Graph",
     "DataFrame",
@@ -79,20 +75,11 @@ class Path(pathlib.Path):
         return self
 
 
-Shape = tp.Tuple[int, ...]
-Shape2D = tp.Tuple[int, int]
-Shape3D = tp.Tuple[int, int, int]
-Shape4D = tp.Tuple[int, int, int, int]
-
 Array = tp.Union[numpy.ndarray]
-Graph = tp.Union[networkx.Graph, skimage.future.graph.RAG]
+Graph = tp.Union[networkx.Graph]
 
-# MultiIndexSeries = tp.Union[pandas.Series]
 DataFrame = tp.Union[pandas.DataFrame]
 AnnData = tp.Union[anndata.AnnData]
 
 Figure = tp.Union[_Figure]
 Axis = tp.Union[matplotlib.axis.Axis]
-
-# Patch = tp.Union[matplotlib.patches.Patch]
-# ColorMap = tp.Union[matplotlib.colors.LinearSegmentedColormap]

@@ -1,8 +1,6 @@
-import scanpy as sc
 import os
 
-from utag.types import Path, Array, AnnData, DataFrame
-
+import scanpy as sc
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -10,8 +8,8 @@ import anndata
 import holoviews as hv
 from holoviews import opts, dim
 
-#hv.extension('matplotlib')
-#hv.extension('bokeh')
+from utag.types import Path, Array, AnnData, DataFrame
+
 
 def add_spatial_image(
     adata: AnnData,
@@ -174,7 +172,6 @@ def adj2chord(
     adjacency_matrix: Array,
     size:int = 300
 ):
-    
     hv.output(fig='svg', size=size)
     
     links = adjacency_matrix.stack().reset_index().rename(columns = {'level_0': 'source', 'level_1': 'target', 0: 'value'}).dropna()

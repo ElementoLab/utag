@@ -1,10 +1,11 @@
 # PIP, using PEP621
 [project]
-name = "gatdu"
+name = "utag"
 authors = [
     {name = "Andre Rendeiro", email = "afrendeiro@gmail.com"},
+    {name = "Junbum Kim", email = "juk4007@med.cornell.edu"},
 ]
-description = "Unsupervised discovery of tissue architechture with graphs (GATDU)"
+description = "Unsupervised discovery of tissue architechture with graphs (UTAG)"
 readme = "README.md"
 keywords = [
     "computational biology",
@@ -29,10 +30,8 @@ dependencies = [
     "numpy>=1.19",
     "pandas>=1.0.1",
     "scipy>=1.6",
-    "scikit-image>=1.18",
     "matplotlib>=3.4",
-    "networkx>=2.4",
-    "tensorflow-gpu>=2.4.1"
+    "networkx>=2.4"
 ]
 dynamic = ['version']
 
@@ -61,13 +60,13 @@ doc = [
 ]
 
 [project.urls]
-homepage = "https://github.com/afrendeiro/gatdu"
+homepage = "https://github.com/afrendeiro/utag"
 # documentation = "readthedocs.org"
-repository = "https://github.com/afrendeiro/gatdu"
-changelog = "https://github.com/afrendeiro/gatdu/blob/master/docs/source/changelog.md"
+repository = "https://github.com/afrendeiro/utag"
+changelog = "https://github.com/afrendeiro/utag/blob/master/docs/source/changelog.md"
 
-[project.entry-points."gatdu"]
-gatdu = "gatdu.cli:main"
+[project.entry-points."utag"]
+utag = "utag.cli:main"
 
 
 [build-system]
@@ -77,7 +76,7 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools_scm]  # 
-write_to = "gatdu/_version.py"
+write_to = "utag/_version.py"
 # write_to_template = '__version__ = "{version}"'
 
 # Poetry
@@ -87,10 +86,10 @@ vcs = "git"
 style = "semver"
 
 [tool.poetry]
-name = "gatdu"
+name = "utag"
 version = "0.0.0"  # waiting on next release of poetry to use dynamic-versioning extension
-description = "Unsupervised discovery of tissue architechture with graphs (GATDU)"
-authors = ["Andre Rendeiro <afrendeiro@gmail.com>"]
+description = "Unsupervised discovery of tissue architechture with graphs (UTAG)"
+authors = ["Andre Rendeiro <afrendeiro@gmail.com>", "Junbum Kim <juk4007@med.cornell.edu>"]
 license = "GPL-3.0-or-later"
 
 [tool.poetry.dependencies]
@@ -157,7 +156,7 @@ module = [
     'matplotlib.*',
     'networkx.*',
     #
-    'gatdu.*'
+    'utag.*'
 ]
 ignore_missing_imports = true
 
