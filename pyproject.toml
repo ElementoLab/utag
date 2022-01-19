@@ -29,9 +29,15 @@ requires-python = ">=3.8"
 dependencies = [
     "numpy>=1.19",
     "pandas>=1.0.1",
+    "anndata",
+    "scanpy",
+    "parc",
+    "squidpy",
     "scipy>=1.6",
     "matplotlib>=3.4",
-    "networkx>=2.4"
+    "tqdm",
+    "networkx>=2.4",
+    "parmap"
 ]
 dynamic = ['version']
 

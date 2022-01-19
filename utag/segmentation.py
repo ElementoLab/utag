@@ -9,6 +9,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from tqdm import tqdm
 import anndata
+import parmap
 
 from utag.types import Path, Array, AnnData
 
@@ -27,6 +28,7 @@ def utag(
     apply_clustering: bool = True,
     clustering_method: tp.Sequence[str] = ["leiden", "parc"],
     resolutions: tp.Sequence[float] = [0.05, 0.1, 0.3, 1.0],
+    parallel: bool = True
 ) -> AnnData:
     """
     Discover tissue architechture in single-cell imaging data
@@ -81,6 +83,10 @@ def utag(
     resolutions: Sequence[float]
         What resolutions should the methods in `clustering_method` be run at.
         Default is [0.05, 0.1, 0.3, 1.0].
+    parallel: bool
+        Whether to run message passing part of algorithm in parallel.
+        Will accelerate the process but consume more memory.
+        Default is True.
 
     Returns
     -------
@@ -111,18 +117,29 @@ def utag(
 
     print("Applying UTAG Algorithm...")
     if slide_key:
-        ad_ = ad
-        ad_list = []
-        for slide in tqdm(ad_.obs[slide_key].unique()):
-            ad = ad_[ad_.obs[slide_key] == slide]
-            ad_copy = ad.copy()
 
-            sq.gr.spatial_neighbors(
-                ad_copy, radius=max_dist, coord_type="generic", set_diag=True
-            )
+        if not parallel:
+            ad_ = ad
+            ad_list = []
+            for slide in tqdm(ad_.obs[slide_key].unique()):
+                ad = ad_[ad_.obs[slide_key] == slide]
+                ad_copy = ad.copy()
 
-            ad_copy = custom_message_passing(ad_copy, mode=normalization_mode)
-            ad_list.append(ad_copy)
+                sq.gr.spatial_neighbors(
+                    ad_copy, radius=max_dist, coord_type="generic", set_diag=True
+                )
+
+                ad_copy = custom_message_passing(ad_copy, mode=normalization_mode)
+                ad_list.append(ad_copy)
+        else:
+            # Parallel mode will consume more memory
+            ads = [ad[ad.obs[slide_key] == slide].copy() for slide in ad.obs[slide_key].unique()]
+            ad_list = parmap.map(
+                _parallel_message_pass,
+                ads,
+                radius=max_dist, coord_type="generic", set_diag=True,
+                mode=normalization_mode,
+                pm_pbar=True)
         ad_result = anndata.concat(ad_list)
     else:
         sq.gr.spatial_neighbors(ad, radius=max_dist, coord_type="generic", set_diag=True)
@@ -160,6 +177,20 @@ def utag(
                 ad_result.obs[res_key2] = ad_result.obs[res_key2].astype("category")
 
     return ad_result
+
+
+def _parallel_message_pass(
+    ad: AnnData,
+    radius: int,
+    coord_type: str,
+    set_diag: bool,
+    mode: str,
+):
+    sq.gr.spatial_neighbors(
+        ad, radius=radius, coord_type=coord_type, set_diag=set_diag
+    )
+    ad = custom_message_passing(ad, mode=mode)
+    return ad
 
 
 def custom_message_passing(adata: AnnData, mode: str = "l1_norm") -> AnnData:
