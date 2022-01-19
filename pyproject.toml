@@ -37,7 +37,8 @@ dependencies = [
     "matplotlib>=3.4",
     "tqdm",
     "networkx>=2.4",
-    "parmap"
+    "parmap",
+    "scikit-learn"
 ]
 dynamic = ['version']
 

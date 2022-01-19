@@ -110,10 +110,12 @@ def utag(
             "Invalid Clustering Method. Clustering Method Should Either be a string or a list"
         )
         return
-    assert "LEIDEN" in clustering_method or "PARC" in clustering_method
+    assert all(m in ["LEIDEN", "PARC", "KMEANS"] for m in clustering_method)
 
     if "PARC" in clustering_method:
         from parc import PARC  # early fail if not available
+    if "KMEANS" in clustering_method:
+        from sklearn.cluster import KMeans
 
     print("Applying UTAG Algorithm...")
     if slide_key:
@@ -157,6 +159,7 @@ def utag(
 
             res_key1 = save_key + "_leiden_" + str(resolution)
             res_key2 = save_key + "_parc_" + str(resolution)
+            res_key3 = save_key + "_kmeans_" + str(resolution)
             if "LEIDEN" in clustering_method:
                 print(f"Applying Leiden Clustering at Resolution: {resolution}...")
                 sc.tl.leiden(ad_result, resolution=resolution, key_added=res_key1)
@@ -175,6 +178,12 @@ def utag(
                 Parc1.run_PARC()
                 ad_result.obs[res_key2] = pd.Categorical(Parc1.labels)
                 ad_result.obs[res_key2] = ad_result.obs[res_key2].astype("category")
+
+            if "KMEANS" in clustering_method:
+                print(f"Applying K-means Clustering at Resolution: {resolution}...")
+                k = int(np.ceil(resolution * 10))
+                kmeans = KMeans(n_clusters=k, random_state=1).fit(ad_result.obsm['X_pca'])
+                ad_result.obs[res_key3] = pd.Categorical(kmeans.labels_.astype(str))
 
     return ad_result
 
