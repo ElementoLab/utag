@@ -22,5 +22,5 @@
 
 #### Usage Principles
 
-GATDU repository input requires an AnnData `adata` with preprocessed expression profiles in `adata.X` and spatial coordinates stored in `adata.obsm['spatial']`.
+UTAG repository input requires an AnnData `adata` with preprocessed expression profiles in `adata.X` and spatial coordinates stored in `adata.obsm['spatial']`.
 For more detailed usage of the package, please refer to [IMC Healthy Lung.ipynb](https://github.com/ElementoLab/utag/blob/main/documentation/IMC%20Healthy%20Lung.ipynb) in the documentation folder.
