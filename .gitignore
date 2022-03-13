@@ -4,7 +4,7 @@ results/
 manuscript/
 data/
 lib/
-.ipynb_checkpoints
+.ipynb_checkpoints/
 
 # ignore test files
 .tox
