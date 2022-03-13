@@ -16,7 +16,7 @@ pip install utag
 ### Install by cloning repository and running setup.py
 ```
 git clone https://github.com/ElementoLab/utag.git
-python3 setup.py install
+pip install utag/.
 ```
 [comment]: <> (Need to check whether this works)
 
