@@ -7,11 +7,6 @@
 This package implements a microanatomical structure segmentation method and outlines possible downstream structural analysis for multiplexed histology images such as Imaging Mass Cytometry (IMC), CODEX, Multiplexed Ion Beam Imaging by Time Of Flight (MIBI-TOF), Cyclic Immunofluorescence (CyCIF), and etc in ```python```. 
 
 ## Getting Started
-### Install using pip
-```
-pip install utag
-```
-[comment]: <> (Needs to be uploaded to pypi)
 
 ### Install by cloning repository and running setup.py
 ```
@@ -37,6 +32,12 @@ pip install utag/.
   - tqdm
   - parmap
 
+### Install using pip
+Under development: The package has not yet been deployed to PyPI, but will be deployed in the near future.
+```
+pip install utag
+```
+[comment]: <> (Needs to be uploaded to pypi)
 
 ## Basic Usage Principles
 
