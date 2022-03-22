@@ -21,7 +21,7 @@ Installation should take less than 10 seconds.
 There are no specific hardware requirements.
 
 Software requirements:
-- UTAG has only been tested on Linux machines.
+- UTAG has been tested on Mac and Linux machines.
 - Python 3.7+ (tested on 3.8.2)
 - Python packages (automatically installed by `pip`):
   - numpy
@@ -49,8 +49,34 @@ The function will output domain classes for each cell stored in the `obs` slot o
 ### Running an example/demo dataset
 
 Please refer to the [notebook directory](documentation/), and to the notebook on [running UTAG on healthy lung data](https://github.com/ElementoLab/utag/blob/main/documentation/IMC%20Healthy%20Lung.ipynb) for a reproducible example.
+All data and respective results used for analysis could be downloaded from [![Zenodo badge](https://zenodo.org/badge/doi/10.5281/zenodo.6376767.svg)](https://doi.org/10.5281/zenodo.6376767).
+
+All data could be downloaded in command line:
+```bash
+pip install zenodo_get
+zenodo_get -d 10.5281/zenodo.6376767 -o data
+```
 
 ### Running on your data
+
+To run the method on multiple images/slides in batch mode:
+```python
+from utag import utag
+
+# to run the program on sample data
+# import scanpy as sc
+# adata = sc.read('data/healthy_lung_adata.h5ad')
+
+utag_results = utag(
+    adata,
+    slide_key="roi",
+    max_dist=20,
+    normalization_mode='l1_norm',
+    apply_clustering=True,
+    clustering_method = 'leiden', 
+    resolutions = [0.05, 0.1, 0.3]
+)
+```
 
 To run the method on a single image:
 ```python
@@ -66,19 +92,7 @@ utag_results = utag(
 )
 ```
 
-To run the method on multiple images/slides in batch mode:
-```python
-from utag import utag
-utag_results = utag(
-    adata,
-    slide_key="roi",
-    max_dist=20,
-    normalization_mode='l1_norm',
-    apply_clustering=True,
-    clustering_method = 'leiden', 
-    resolutions = [0.05, 0.1, 0.3]
-)
-```
+
 
 To visually inspect the results of the method:
 ```python
