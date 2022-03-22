@@ -36,6 +36,7 @@ Software requirements:
   - networkx
   - parmap
   - scikit-learn
+
 Specific versions of Python packages have been pinned to the [setup.cfg](setup.cfg) file.
 
 ## Basic Usage Principles
