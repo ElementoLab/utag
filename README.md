@@ -1,6 +1,7 @@
 # Unsupervised discovery of tissue architechture with graphs (UTAG)
 
-[![Biorxiv badge](https://zenodo.org/badge/doi/10.1101/2022.03.15.484534.svg)](https://doi.org/10.1101/2022.03.15.484534) ⬅️ read the preprint here
+[![Biorxiv badge](https://zenodo.org/badge/doi/10.1101/2022.03.15.484534.svg)](https://doi.org/10.1101/2022.03.15.484534) ⬅️ read the preprint here  <br>
+[![Zenodo badge](https://zenodo.org/badge/doi/10.5281/zenodo.4110560.svg)](https://doi.org/10.5281/zenodo.4110560) ⬅️ Preprocessed Multiplexed Image Data and UTAG results <br>
  
 This package implements segmentation of multiplexed imaging data into microanatomical domains.
 Multiplexed imaging data types are typically imaging mass cytometry (IMC), co-detection by indexing (CODEX), multiplexed ion beam imaging by time of flight (MIBI-TOF), cyclic immunofluorescence (CyCIF), and others.
