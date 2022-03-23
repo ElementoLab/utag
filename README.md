@@ -36,7 +36,7 @@ Software requirements:
   - networkx
   - parmap
   - scikit-learn
-  - imc (may require manual installation for MacOS through pip)
+  - [imc](https://github.com/ElementoLab/imc) (may require manual installation for MacOS through pip)
   - setuptools_scm (may require manual installation for MacOS through pip)
 
 Specific versions of Python packages have been pinned to the [setup.cfg](setup.cfg) file.
