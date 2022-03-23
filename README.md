@@ -36,7 +36,6 @@ Software requirements:
   - networkx
   - parmap
   - scikit-learn
-  - [imc](https://github.com/ElementoLab/imc) (may require manual installation for MacOS through pip)
   - setuptools_scm (may require manual installation for MacOS through pip)
 
 Specific versions of Python packages have been pinned to the [setup.cfg](setup.cfg) file.
@@ -51,7 +50,7 @@ The function will output domain classes for each cell stored in the `obs` slot o
 ### Running an example/demo dataset
 
 Please refer to the [notebook directory](documentation/), and to the notebook on [running UTAG on healthy lung data](https://github.com/ElementoLab/utag/blob/main/documentation/IMC%20Healthy%20Lung.ipynb) for a reproducible example.
-All data and respective results used for analysis could be downloaded from [![Zenodo badge](https://zenodo.org/badge/doi/10.5281/zenodo.6376767.svg)](https://doi.org/10.5281/zenodo.6376767).
+All data and respective results used for analysis can be downloaded from [![Zenodo badge](https://zenodo.org/badge/doi/10.5281/zenodo.6376767.svg)](https://doi.org/10.5281/zenodo.6376767).
 
 All data could alternatively be downloaded through command line:
 ```bash
@@ -65,10 +64,13 @@ To run the method on multiple images/slides in batch mode:
 ```python
 from utag import utag
 
-# to run the program on provided data
-# import scanpy as sc
-# adata = sc.read('data/healthy_lung_adata.h5ad')
+# Use Scanpy to get a h5ad file with provided data
+import scanpy as sc
+adata = sc.read(
+    'data/healthy_lung_adata.h5ad',
+    backup_url='https://zenodo.org/record/6376767/files/healthy_lung_adata.h5ad?download=1')
 
+# Run UTAG on provided data
 utag_results = utag(
     adata,
     slide_key="roi",
@@ -80,7 +82,7 @@ utag_results = utag(
 )
 ```
 
-To run the method on a single image:
+To run the method on a single image, pass `None` to the slide_key argument:
 ```python
 from utag import utag
 utag_results = utag(
@@ -93,8 +95,6 @@ utag_results = utag(
     resolutions = [0.05, 0.1, 0.3]
 )
 ```
-
-
 
 To visually inspect the results of the method:
 ```python
