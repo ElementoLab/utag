@@ -81,6 +81,7 @@ utag_results = utag(
     resolutions = [0.05, 0.1, 0.3]
 )
 ```
+UTAG should take around ~2 min on a local machine for the batch mode on the data.
 
 To run the method on a single image, pass `None` to the slide_key argument:
 ```python
