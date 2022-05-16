@@ -134,6 +134,53 @@ def slide_connectivity(
         
     return slide_connection
 
+def measure_per_domain_cell_type_colocalization(
+    adata: AnnData,
+    utag_key: str = "UTAG Label",
+    max_dist: int = 40,
+    n_iterations: int = 100,
+):
+    import squidpy as sq
+    a_ = adata.copy()
+    sq.gr.spatial_neighbors(a_, radius=max_dist, coord_type="generic")
+
+    G = nx.from_scipy_sparse_matrix(a_.obsp["spatial_connectivities"])
+
+    utag_map = {i: x for i, x in enumerate(adata.obs[utag_key])}
+    nx.set_node_attributes(G, utag_map, name=utag_key)
+
+    adj, order = nx.linalg.attrmatrix.attr_matrix(G, node_attr=utag_key)
+    order = pd.Series(order).astype(adata.obs[utag_key].dtype)
+    freqs = pd.DataFrame(adj, order, order).fillna(0) + 1
+
+    norm_freqs = correct_interaction_background_random(G, freqs, utag_key, n_iterations)
+    return norm_freqs
+
+
+def correct_interaction_background_random(
+    graph: nx.Graph, freqs: pd.DataFrame, attribute: str, n_iterations: int = 100
+):
+    values = {x: graph.nodes[x][attribute] for x in graph.nodes}
+    shuffled_freqs = list()
+    for _ in range(n_iterations):
+        g2 = graph.copy()
+        shuffled_attr = pd.Series(values).sample(frac=1)
+        shuffled_attr.index = values
+        nx.set_node_attributes(g2, shuffled_attr.to_dict(), name=attribute)
+        rf, rl = nx.linalg.attrmatrix.attr_matrix(g2, node_attr=attribute)
+        rl = pd.Series(rl, dtype=freqs.index.dtype)
+        shuffled_freqs.append(pd.DataFrame(rf, index=rl, columns=rl))#.fillna(0) + 1)
+    shuffled_freq = pd.concat(shuffled_freqs)
+    shuffled_freq = shuffled_freq.groupby(level=0).sum()
+    shuffled_freq = shuffled_freq.fillna(0) + 1
+    
+    fl = np.log((freqs / freqs.values.sum()))
+    sl = np.log((shuffled_freq / shuffled_freq.values.sum()))
+    # make sure both contain all edges/nodes
+    fl = fl.reindex(sl.index, axis=0).reindex(sl.index, axis=1)
+    sl = sl.reindex(fl.index, axis=0).reindex(fl.index, axis=1)
+    return fl - sl
+
 
 def evaluate_clustering(
     adata: AnnData,
