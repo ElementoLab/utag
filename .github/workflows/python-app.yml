@@ -13,13 +13,19 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  #build:
 
-    runs-on: ubuntu-latest
-    
+  parallel-runs-across-platforms:
+    name: every OS
     strategy:
       matrix:
+        # run 2 copies of the current job in parallel
+        # and they will load balance all specs
+        os: ['ubuntu-latest','macos-latest',  'windows-latest']
+        containers: [1, 2]
         python-version: [3.7.8, 3.8.2, 3.9.13, 3.10.0]
+        
+    runs-on: ${{ matrix.os }}
         
     steps:
       # Checkout the latest code from the repo
