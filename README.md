@@ -21,7 +21,7 @@ Installation should take less than 10 seconds.
 There are no specific hardware requirements.
 
 Software requirements:
-- UTAG has been tested on Mac and Linux machines.
+- UTAG has been tested on Mac OS, Linux, and Windows [WSL](https://docs.microsoft.com/en-us/windows/wsl/about) (Windows Subsystem for Linux).
 - Python 3.7+ (tested on 3.8.2)
 - Python packages (automatically installed by `pip`):
   - numpy
