@@ -23,7 +23,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 #license = "gpt3"
-requires-python = ">=3.8"
+requires-python = ">=3.5"
 # not yet supported by pip!
 dependencies = [
     "numpy>=1.19",
