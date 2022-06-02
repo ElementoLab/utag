@@ -133,7 +133,7 @@ For more detailed usage of the package and downstream analysis, please refer to 
 
 ## Running UTAG on R
 
-To make UTAG available to R users, we port the python code to using the `reticulate` package. The code was tested under after installing `UTAG` natively for python 3.8.10 under Ubuntu 20.04.3 LTS and R 4.2.0.
+To make UTAG available to R users, we port the python code to using the `reticulate` package. The code was tested under after installing `UTAG` natively for python 3.8.10 and under conda environment with python 3.10.4, on Ubuntu 20.04.3 LTS and R 4.2.0.
 
 Nonetheless, we highly recommend that users use our package in python for more involved analysis as the package has been developed and tested more thoroughly in python.
 
