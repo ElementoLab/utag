@@ -129,3 +129,50 @@ We believe that the optimal clustering resolution is a hyperparameter that shoul
 | `parallel` | Whether the message passing part of the method should be parallelized. This is done using the `parmap` package and the `multiprocessing` module from the standard library. |
 
 For more detailed usage of the package and downstream analysis, please refer to [IMC Healthy Lung.ipynb](https://github.com/ElementoLab/utag/blob/main/documentation/IMC%20Healthy%20Lung.ipynb) in the documentation folder.
+
+
+## Running UTAG on R
+
+To make UTAG available to R users, we port the python code to using the `reticulate` package. The code was tested under after installing `UTAG` natively for python 3.8.10 under Ubuntu 20.04.3 LTS and R 4.2.0.
+
+Nonetheless, we highly recommend that users use our package in python for more involved analysis as the package has been developed and tested more thoroughly in python.
+
+```R
+install.packages('reticulate')
+library(reticulate)
+
+# grab python interpreter
+use_python('/usr/bin/python3') # in case UTAG is installed on native python
+# use_condaenv('utag') # in case UTAG is installed using conda
+# use_virtualevn('utag') # in case UTAG is installed under virtualenv
+
+
+# import necessary python packages
+utag <- import('utag')
+scanpy <- import('scanpy')
+
+# read anndata with cell expressions and and locations 
+adata <- scanpy$read(
+    'data/healthy_lung_adata.h5ad',
+    backup_url='https://zenodo.org/record/6376767/files/healthy_lung_adata.h5ad?download=1'
+)
+
+# show general content of the data
+print(adata)
+
+# run UTAG
+utag_results <- utag$utag(
+    adata,
+    slide_key = "roi",
+    max_dist = 20,
+    normalization_mode = 'l1_norm',
+    apply_clustering = TRUE,
+    clustering_method = 'leiden', 
+    resolutions = c(0.05, 0.1, 0.3)
+)
+
+# show content of the data that now includes UTAG results for various resolutions
+print(utag_results)
+```
+
+

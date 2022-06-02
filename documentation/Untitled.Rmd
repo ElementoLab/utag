@@ -5,12 +5,22 @@ date: '2022-05-24'
 ---
 
 ```{r setup, include=FALSE}
-install.packages('reticulate')
+#install.packages('reticulate')
 library(reticulate)
-use_condaenv('utag-test')
+
+use_condaenv('utag')
+pd = import('pandas', as = 'pd')
 #system('pip3 install git+https://github.com/ElementoLab/utag.git@main')
 ```
 
+```{r}
+print('Hello World')
+pd = import('pandas', as = 'pd', convert = FALSE)
+
+#import pandas
+#import anndata
+
+```
 
 ```{python}
 from utag import utag
