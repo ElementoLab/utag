@@ -105,7 +105,7 @@ for roi in utag_results.obs['roi'].unique():
     sc.pl.spatial(result, color = 'UTAG Label_leiden_0.1', spot_size = 10)
 ```
 
-## User Guid on UTAG (Hyperparameters to test and tune)
+## User Guide on UTAG (Hyperparameters to test and tune)
 
 
 Although UTAG greatly reduces manual labor involved in segmentation of microanatomical domains across, successful application of UTAG depends on three key user inputs. First is the `max_dist` parameter which defines the threshold distance. Second is the clustering resolution (under list of `resolutions`) to determine the coarsity of the clustering. Last is user interpretation of the resulting clusters to identify the structure.
