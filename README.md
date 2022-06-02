@@ -105,6 +105,13 @@ for roi in utag_results.obs['roi'].unique():
     sc.pl.spatial(result, color = 'UTAG Label_leiden_0.1', spot_size = 10)
 ```
 
+## User Guid on UTAG (Hyperparameters to test and tune)
+
+User Guide on UTAG
+Although UTAG greatly reduces manual labor involved in segmentation of microanatomical domains across, successful application of UTAG depends on three key user inputs. First is the `max_dist` parameter which defines the threshold distance. Second is the clustering resolution (under list of `resolutions`) to determine the coarsity of the clustering. Last is user interpretation of the resulting clusters to identify the structure.
+We intentionally leave the optimization of max_dist open to users to maximize the applicability of UTAG to unseen datasets. This is because this parameter is tightly related with the resolution or magnification of the data under use. In our manuscript, we apply the method on IMC data and optical imaging-based CyCIF, which have different per unit area pixel densities. In the case of IMC, we suggest that a well working max_dist is between 10 and 20 as 1 pixel exactly maps to 1 micrometer. With an imaging-based technique like CyCIF, the optimal distance can vary with magnification, focal lengths, distance to tissue, and other factors, which make it hard to suggest a one-fits-all rule. Also there might be nuanced differences for the exact tissue of interest that may vary across specimens under examination.
+We believe that the optimal clustering resolution is a hyperparameter that should be explored to suit their biological question of interest. For such reasons, we provide a list of resolutions as default to be explored by the users. A general rule here is that increasing the resolution parameter will return more refined substructures, while decreasing it will return coarser, more broad structures. We also recommend users to use a higher resolution parameter when screening for a rare structure, as a higher resolution will capture more structures, and vice versa. In our benchmarking, we saw that with the exception of extreme hyperparameter values, UTAG’s performance was fairly robust across various clustering resolutions (Extended Data Figure S3).
+
 ## Key Parameters
 
 | Input Parameter | Description |
