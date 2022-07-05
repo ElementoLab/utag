@@ -28,7 +28,8 @@ def utag(
     apply_clustering: bool = True,
     clustering_method: tp.Sequence[str] = ["leiden", "parc"],
     resolutions: tp.Sequence[float] = [0.05, 0.1, 0.3, 1.0],
-    parallel: bool = True
+    leiden_kwargs: tp.Dict[str, tp.Any] = None,
+    parc_kwargs: tp.Dict[str, tp.Any] = None,
     parallel: bool = True,
     processes: int = -1,
 ) -> AnnData:
@@ -85,6 +86,10 @@ def utag(
     resolutions: Sequence[float]
         What resolutions should the methods in `clustering_method` be run at.
         Default is [0.05, 0.1, 0.3, 1.0].
+    leiden_kwargs: dict[str, Any]
+        Keyword arguments to pass to scanpy.tl.leiden.
+    parc_kwargs: dict[str, Any]
+        Keyword arguments to pass to parc.PARC.
     parallel: bool
         Whether to run message passing part of algorithm in parallel.
         Will accelerate the process but consume more memory.
@@ -168,27 +173,33 @@ def utag(
             res_key3 = save_key + "_kmeans_" + str(resolution)
             if "LEIDEN" in clustering_method:
                 print(f"Applying Leiden Clustering at Resolution: {resolution}...")
-                sc.tl.leiden(ad_result, resolution=resolution, key_added=res_key1)
+                kwargs = dict()
+                kwargs.update(leiden_kwargs or {})
+                sc.tl.leiden(
+                    ad_result, resolution=resolution, key_added=res_key1, **kwargs
+                )
 
             if "PARC" in clustering_method:
                 from parc import PARC
 
                 print(f"Applying PARC Clustering at Resolution: {resolution}...")
-                Parc1 = PARC(
+
+                kwargs = dict(random_seed=1, small_pop=1000)
+                kwargs.update(parc_kwargs or {})
+                model = PARC(
                     ad_result.obsm["X_pca"],
                     neighbor_graph=ad_result.obsp["connectivities"],
                     resolution_parameter=resolution,
-                    random_seed=1,
-                    small_pop=1000,
+                    **kwargs,
                 )
-                Parc1.run_PARC()
-                ad_result.obs[res_key2] = pd.Categorical(Parc1.labels)
+                model.run_PARC()
+                ad_result.obs[res_key2] = pd.Categorical(model.labels)
                 ad_result.obs[res_key2] = ad_result.obs[res_key2].astype("category")
 
             if "KMEANS" in clustering_method:
                 print(f"Applying K-means Clustering at Resolution: {resolution}...")
                 k = int(np.ceil(resolution * 10))
-                kmeans = KMeans(n_clusters=k, random_state=1).fit(ad_result.obsm['X_pca'])
+                kmeans = KMeans(n_clusters=k, random_state=1).fit(ad_result.obsm["X_pca"])
                 ad_result.obs[res_key3] = pd.Categorical(kmeans.labels_.astype(str))
 
     return ad_result
