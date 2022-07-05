@@ -174,6 +174,7 @@ def utag(
                 sc.tl.leiden(
                     ad_result, resolution=resolution, key_added=res_key1, **kwargs
                 )
+                add_probabilities_to_centroid(ad_result, res_key1)
 
             if "PARC" in clustering_method:
                 from parc import PARC
@@ -191,12 +192,14 @@ def utag(
                 model.run_PARC()
                 ad_result.obs[res_key2] = pd.Categorical(model.labels)
                 ad_result.obs[res_key2] = ad_result.obs[res_key2].astype("category")
+                add_probabilities_to_centroid(ad_result, res_key2)
 
             if "KMEANS" in clustering_method:
                 print(f"Applying K-means Clustering at Resolution: {resolution}...")
                 k = int(np.ceil(resolution * 10))
                 kmeans = KMeans(n_clusters=k, random_state=1).fit(ad_result.obsm["X_pca"])
                 ad_result.obs[res_key3] = pd.Categorical(kmeans.labels_.astype(str))
+                add_probabilities_to_centroid(ad_result, res_key3)
 
     return ad_result
 
@@ -214,7 +217,6 @@ def _parallel_message_pass(
 
 
 def custom_message_passing(adata: AnnData, mode: str = "l1_norm") -> AnnData:
-
     from scipy.linalg import sqrtm
 
     if mode == "l1_norm":
@@ -235,6 +237,21 @@ def custom_message_passing(adata: AnnData, mode: str = "l1_norm") -> AnnData:
 
 def low_variance_filter(adata: AnnData) -> AnnData:
     return adata[:, adata.var["std"] > adata.var["std"].median()]
+
+
+def add_probabilities_to_centroid(
+    adata: AnnData, col: str, name_to_output: str = None
+) -> AnnData:
+    from utag.utils import z_score
+    from scipy.special import softmax
+
+    if name_to_output is None:
+        name_to_output = col + "_probabilities"
+
+    mean = z_score(adata.to_df()).groupby(adata.obs[col]).mean()
+    probs = softmax(adata.to_df() @ mean.T, axis=1)
+    adata.obsm[name_to_output] = probs
+    return adata
 
 
 def evaluate_performance(

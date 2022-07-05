@@ -443,3 +443,7 @@ def mask_to_labelme(
     }
     with open(output_file.as_posix(), "w") as fp:
         json.dump(payload, fp, indent=2)
+
+
+def z_score(x: Array) -> Array:
+    return (x - x.min()) / (x.max() - x.min())
