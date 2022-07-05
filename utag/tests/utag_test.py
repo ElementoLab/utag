@@ -9,10 +9,8 @@ from utag import utag
 
 
 kwargs = dict(
-    slide_key="roi",
-    max_dist=20,
-    normalization_mode="l1_norm",
-    apply_clustering=True)
+    slide_key="roi", max_dist=20, normalization_mode="l1_norm", apply_clustering=True
+)
 
 
 @pytest.fixture
@@ -25,7 +23,7 @@ def adata() -> AnnData:
 
 def check(
     utag_results: AnnData,
-    probabilities: list[float],
+    probabilities: tp.Sequence[float],
     n: int,
     clustering: tp.Sequence[str],
 ) -> None:
@@ -43,7 +41,7 @@ def test_subsample_serial(adata: AnnData) -> None:
     clustering = ["leiden", "parc"]
     utag_results = utag(
         adata[:n],
-        **kwargs
+        **kwargs,
         clustering_method=clustering,
         parc_kwargs=dict(small_pop=10),
         resolutions=[0.3],
@@ -57,7 +55,7 @@ def test_subsample_parallel(adata: AnnData) -> None:
     clustering = ["leiden", "parc"]
     utag_results = utag(
         adata[:n],
-        **kwargs
+        **kwargs,
         clustering_method=clustering,
         parc_kwargs=dict(small_pop=10),
         resolutions=[0.3],
@@ -71,7 +69,7 @@ def test_full(adata: AnnData) -> None:
     n = adata.shape[0]
     utag_results = utag(
         adata,
-        **kwargs
+        **kwargs,
         clustering_method="leiden",
         resolutions=probabilities,
     )

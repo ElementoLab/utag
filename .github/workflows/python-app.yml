@@ -5,9 +5,9 @@ name: Python application UTAG test automation
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, dev ]
   pull_request:
-    branches: [ main ]
+    branches: [ main, dev ]
 
 permissions:
   contents: read
@@ -21,6 +21,7 @@ jobs:
         # and they will load balance all specs
         os: ['ubuntu-latest','macos-latest'] #,  'windows-latest']
         python-version: [3.7.8, 3.8.2, 3.9.13, 3.10.0]
+      fail-fast: false
         
     runs-on: ${{ matrix.os }}
         
@@ -40,7 +41,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install flake8 pytest
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        pip install git+https://github.com/ElementoLab/utag.git@main
+        pip install .
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
