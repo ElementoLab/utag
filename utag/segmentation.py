@@ -29,6 +29,8 @@ def utag(
     clustering_method: tp.Sequence[str] = ["leiden", "parc"],
     resolutions: tp.Sequence[float] = [0.05, 0.1, 0.3, 1.0],
     parallel: bool = True
+    parallel: bool = True,
+    processes: int = -1,
 ) -> AnnData:
     """
     Discover tissue architechture in single-cell imaging data
@@ -87,6 +89,9 @@ def utag(
         Whether to run message passing part of algorithm in parallel.
         Will accelerate the process but consume more memory.
         Default is True.
+    processes: int
+        Number of processes to use in parallel.
+        Default is to use all available (-1).
 
     Returns
     -------
@@ -142,6 +147,7 @@ def utag(
                 radius=max_dist, coord_type="generic", set_diag=True,
                 mode=normalization_mode,
                 pm_pbar=True)
+                pm_processes=processes,
         ad_result = anndata.concat(ad_list)
     else:
         sq.gr.spatial_neighbors(ad, radius=max_dist, coord_type="generic", set_diag=True)
