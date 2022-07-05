@@ -129,30 +129,20 @@ def utag(
 
     print("Applying UTAG Algorithm...")
     if slide_key:
-
-        if not parallel:
-            ad_ = ad
-            ad_list = []
-            for slide in tqdm(ad_.obs[slide_key].unique()):
-                ad = ad_[ad_.obs[slide_key] == slide]
-                ad_copy = ad.copy()
-
-                sq.gr.spatial_neighbors(
-                    ad_copy, radius=max_dist, coord_type="generic", set_diag=True
-                )
-
-                ad_copy = custom_message_passing(ad_copy, mode=normalization_mode)
-                ad_list.append(ad_copy)
-        else:
-            # Parallel mode will consume more memory
-            ads = [ad[ad.obs[slide_key] == slide].copy() for slide in ad.obs[slide_key].unique()]
-            ad_list = parmap.map(
-                _parallel_message_pass,
-                ads,
-                radius=max_dist, coord_type="generic", set_diag=True,
-                mode=normalization_mode,
-                pm_pbar=True)
-                pm_processes=processes,
+        ads = [
+            ad[ad.obs[slide_key] == slide].copy() for slide in ad.obs[slide_key].unique()
+        ]
+        ad_list = parmap.map(
+            _parallel_message_pass,
+            ads,
+            radius=max_dist,
+            coord_type="generic",
+            set_diag=True,
+            mode=normalization_mode,
+            pm_pbar=True,
+            pm_parallel=parallel,
+            pm_processes=processes,
+        )
         ad_result = anndata.concat(ad_list)
     else:
         sq.gr.spatial_neighbors(ad, radius=max_dist, coord_type="generic", set_diag=True)
@@ -218,9 +208,7 @@ def _parallel_message_pass(
     set_diag: bool,
     mode: str,
 ):
-    sq.gr.spatial_neighbors(
-        ad, radius=radius, coord_type=coord_type, set_diag=set_diag
-    )
+    sq.gr.spatial_neighbors(ad, radius=radius, coord_type=coord_type, set_diag=set_diag)
     ad = custom_message_passing(ad, mode=mode)
     return ad
 
