@@ -31,7 +31,7 @@ def utag(
     leiden_kwargs: tp.Dict[str, tp.Any] = None,
     parc_kwargs: tp.Dict[str, tp.Any] = None,
     parallel: bool = True,
-    processes: int = -1,
+    processes: int = None,
 ) -> AnnData:
     """
     Discover tissue architechture in single-cell imaging data
