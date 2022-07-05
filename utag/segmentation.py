@@ -159,6 +159,12 @@ def utag(
         ad_result = custom_message_passing(ad, mode=normalization_mode)
 
     if apply_clustering:
+        if "n_comps" in pca_kwargs:
+            if pca_kwargs["n_comps"] > ad_result.shape[1]:
+                pca_kwargs["n_comps"] = ad_result.shape[1] - 1
+                print(
+                    f"Overwriding provided number of PCA dimensions to match number of features: {pca_kwargs['n_comps']}"
+                )
         sc.tl.pca(ad_result, **pca_kwargs)
         sc.pp.neighbors(ad_result)
 
