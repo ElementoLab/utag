@@ -49,7 +49,7 @@ The function will output domain classes for each cell stored in the `obs` slot o
 
 ### Running an example/demo dataset
 
-Please refer to the [notebook directory](documentation/), and to the notebook on [running UTAG on healthy lung data](https://github.com/ElementoLab/utag/blob/main/documentation/IMC%20Healthy%20Lung.ipynb) for a reproducible example.
+Please refer to the [notebook directory](documentation/), and to the notebook on [running UTAG on healthy lung data](documentation/IMC%20Healthy%20Lung.ipynb) for a reproducible example.
 All data and respective results used for analysis can be downloaded from [![Zenodo badge](https://zenodo.org/badge/doi/10.5281/zenodo.6376767.svg)](https://doi.org/10.5281/zenodo.6376767).
 
 All data could alternatively be downloaded through command line:
@@ -81,7 +81,7 @@ utag_results = utag(
     resolutions = [0.05, 0.1, 0.3]
 )
 ```
-UTAG should take around ~2 min on a local machine for the batch mode on the data.
+UTAG should take around \~2 min on a local machine for the batch mode on the data.
 
 To run the method on a single image, pass `None` to the slide_key argument:
 ```python
@@ -128,7 +128,7 @@ We believe that the optimal clustering resolution is a hyperparameter that shoul
 | `resolutions` |  (Sequence[float], default = [0.05, 0.1, 0.3, 1.0]) Resolutions the methods in `clustering_method` should be run at. |
 | `parallel` | Whether the message passing part of the method should be parallelized. This is done using the `parmap` package and the `multiprocessing` module from the standard library. |
 
-For more detailed usage of the package and downstream analysis, please refer to [IMC Healthy Lung.ipynb](https://github.com/ElementoLab/utag/blob/main/documentation/IMC%20Healthy%20Lung.ipynb) in the documentation folder.
+For more detailed usage of the package and downstream analysis, please refer to [IMC Healthy Lung.ipynb](documentation/IMC%20Healthy%20Lung.ipynb) in the documentation folder.
 
 
 ## Running UTAG on R
@@ -174,5 +174,17 @@ utag_results <- utag$utag(
 # show content of the data that now includes UTAG results for various resolutions
 print(utag_results)
 ```
+Also available as a [R markdown file in](documentation/Running%20in%20R.Rmd).
 
+## Development
 
+We are happy to receive community contributions to UTAG through pull requests on Github.
+
+Please run tests after re-installing the package:
+```bash
+pytest --pyargs utag
+```
+or before by:
+```bash
+pytest utag/tests/utag_test.py
+```
