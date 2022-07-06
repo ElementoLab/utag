@@ -4,6 +4,7 @@ import pytest
 import numpy as np
 import scanpy as sc
 from anndata import AnnData
+import scipy
 
 from utag import utag
 
@@ -74,3 +75,28 @@ def test_full(adata: AnnData) -> None:
         resolutions=probabilities,
     )
     check(utag_results, probabilities, adata.shape[0], ["leiden"])
+
+
+def test_subsample_keep_spatial(adata: AnnData) -> None:
+    n = 10_000
+    clustering = ["parc"]
+    utag_results = utag(
+        adata[:n],
+        **kwargs,
+        clustering_method=clustering,
+        parc_kwargs=dict(small_pop=10),
+        keep_spatial_connectivity=True,
+        resolutions=[0.3],
+        parallel=False,
+    )
+    check(utag_results, [0.3], n, clustering)
+    assert "spatial_connectivities" in utag_results.obsp
+    assert "spatial_distances" in utag_results.obsp
+    assert utag_results.obsp["spatial_connectivities"].shape == (n, n)
+    assert utag_results.obsp["spatial_distances"].shape == (n, n)
+    assert (
+        scipy.sparse.csr_matrix.diagonal(utag_results.obsp["spatial_connectivities"]) == 1
+    ).all()
+    assert not scipy.sparse.csr_matrix.diagonal(
+        utag_results.obsp["spatial_distances"]
+    ).any()

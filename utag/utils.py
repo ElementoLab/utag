@@ -446,4 +446,27 @@ def mask_to_labelme(
 
 
 def z_score(x: Array) -> Array:
+    """
+    Scale (divide by standard deviation) and center (subtract mean) array-like objects.
+    """
     return (x - x.min()) / (x.max() - x.min())
+
+
+def sparse_matrix_dstack(
+    matrices: tp.Sequence[scipy.sparse.csr_matrix],
+) -> scipy.sparse.csr_matrix:
+    """
+    Diagonally stack sparse matrices.
+    """
+    import scipy
+    from tqdm import tqdm
+
+    n = sum([x.shape[0] for x in matrices])
+    _res = list()
+    i = 0
+    for x in tqdm(matrices):
+        v = scipy.sparse.csr_matrix((x.shape[0], n))
+        v[:, i : i + x.shape[0]] = x
+        _res.append(v)
+        i += x.shape[0]
+    return scipy.sparse.vstack(_res)

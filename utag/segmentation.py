@@ -12,6 +12,7 @@ import anndata
 import parmap
 
 from utag.types import Path, Array, AnnData
+from utag.utils import sparse_matrix_dstack
 
 
 def utag(
@@ -22,6 +23,7 @@ def utag(
     filter_by_variance: bool = False,
     max_dist: float = 20.0,
     normalization_mode: str = "l1_norm",
+    keep_spatial_connectivity: bool = False,
     pca_kwargs: tp.Dict[str, tp.Any] = dict(n_comps=10),
     apply_umap: bool = False,
     umap_kwargs: tp.Dict[str, tp.Any] = dict(),
@@ -144,6 +146,13 @@ def utag(
             pm_processes=processes,
         )
         ad_result = anndata.concat(ad_list)
+        if keep_spatial_connectivity:
+            ad_result.obsp["spatial_connectivities"] = sparse_matrix_dstack(
+                [x.obsp["spatial_connectivities"] for x in ad_list]
+            )
+            ad_result.obsp["spatial_distances"] = sparse_matrix_dstack(
+                [x.obsp["spatial_distances"] for x in ad_list]
+            )
     else:
         sq.gr.spatial_neighbors(ad, radius=max_dist, coord_type="generic", set_diag=True)
         ad_result = custom_message_passing(ad, mode=normalization_mode)
