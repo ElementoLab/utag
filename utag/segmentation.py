@@ -70,6 +70,10 @@ def utag(
     normalization_mode: str
         Method to normalize adjacency matrix.
         Default is "l1_norm", any other value will not use normalization.
+    keep_spatial_connectivity: bool
+        Whether to keep sparse matrices of spatial connectivity and distance in the obsp attribute of the
+        resulting anndata object. This could be useful in downstream applications.
+        Default is not to (False).
     pca_kwargs: Dict[str, Any]
         Keyword arguments to be passed to scanpy.pp.pca for dimensionality reduction after message passing.
         Default is to pass n_comps=10, which uses 10 Principal Components.
