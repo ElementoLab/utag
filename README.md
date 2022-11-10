@@ -42,7 +42,7 @@ Software requirements:
 Specific versions of Python packages have been pinned to the [setup.cfg](setup.cfg) file.
 
 ## Tutorial
-Check out new [tutorial] (UTAG%20Tutorial.ipynb) for how to run UTAG on your own data with minimal required input, which are the numeric cell feature matrix, and xy coordinates.
+Check out new [tutorial](documentation/UTAG%20Tutorial.ipynb) for how to run UTAG on your own data with minimal required input, which are the numeric cell feature matrix, and xy coordinates.
 
 ## Basic Usage Principles
 
