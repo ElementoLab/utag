@@ -234,7 +234,7 @@ def custom_message_passing(adata: AnnData, mode: str = "l1_norm") -> AnnData:
 
     if mode == "l1_norm":
         A = adata.obsp["spatial_connectivities"]
-        A_mod = A + np.eye(A.shape[0])
+        A_mod = np.asarray(A + np.eye(A.shape[0]))
 
         from sklearn.preprocessing import normalize
 
