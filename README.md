@@ -127,9 +127,9 @@ We believe that the optimal clustering resolution is a hyperparameter that shoul
 | `slide_key` | (`str`, optional, default = 'Slide') Key required for running UTAG across multiple images. Unique image identifiers should be placed under `adata.obs`. Use `None` to run UTAG on a single slide. |
 | `save_key` | (`str`, default = 'UTAG Label') Key to be added to adata object holding the UTAG clusters. Depending on the values of `clustering_method` and `resolutions`, the final keys will be of the form: {save_key}\_{method}\_{resolution}". |
 | `normalization_mode` |  (`str`, default = 'l1_norm') Method to normalize adjacency matrix. 'l1_norm' will behave as mean-aggregation during message passing. Default is 'l1_norm'. Any other value will not perform normalization, leading to a sum-aggregation. |
-| `apply_clustering` |  (bool, default = True) Whether to cluster the message passed matrix. |
-| `clustering_method` |  (Sequence[str], default = ['leiden', 'parc']) Which clustering method(s) to use for clustering of the message passed matrix. |
-| `resolutions` |  (Sequence[float], default = [0.05, 0.1, 0.3, 1.0]) Resolutions the methods in `clustering_method` should be run at. |
+| `apply_clustering` |  (`bool`, default = True) Whether to cluster the message passed matrix. |
+| `clustering_method` |  (`Sequence[str]`, default = ['leiden', 'parc']) Which clustering method(s) to use for clustering of the message passed matrix. |
+| `resolutions` |  (`Sequence[float]`, default = [0.05, 0.1, 0.3, 1.0]) Resolutions the methods in `clustering_method` should be run at. |
 | `parallel` | Whether the message passing part of the method should be parallelized. This is done using the `parmap` package and the `multiprocessing` module from the standard library. |
 
 For more detailed usage of the package and downstream analysis, please refer to [IMC Healthy Lung.ipynb](documentation/IMC%20Healthy%20Lung.ipynb) in the documentation folder.
