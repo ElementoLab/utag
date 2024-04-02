@@ -28,7 +28,7 @@ def utag(
     apply_umap: bool = False,
     umap_kwargs: tp.Dict[str, tp.Any] = dict(),
     apply_clustering: bool = True,
-    clustering_method: tp.Sequence[str] = ["leiden", "parc"],
+    clustering_method: tp.Sequence[str] = ["leiden", "parc", "kmeans"],
     resolutions: tp.Sequence[float] = [0.05, 0.1, 0.3, 1.0],
     leiden_kwargs: tp.Dict[str, tp.Any] = None,
     parc_kwargs: tp.Dict[str, tp.Any] = None,
@@ -231,19 +231,17 @@ def _parallel_message_pass(
 
 def custom_message_passing(adata: AnnData, mode: str = "l1_norm") -> AnnData:
     from scipy.linalg import sqrtm
-
+    from scipy.sparse import eye_array
+    import logging
     if mode == "l1_norm":
         A = adata.obsp["spatial_connectivities"]
-        A_mod = np.asarray(A + np.eye(A.shape[0]))
-
         from sklearn.preprocessing import normalize
-
-        affinity = normalize(A_mod, axis=1, norm="l1")
+        affinity = normalize(A, axis=1, norm="l1")
     else:
         # Plain A_mod multiplication
         A = adata.obsp["spatial_connectivities"]
         affinity = A
-
+    logging.info(type(affinity))
     adata.X = affinity @ adata.X
     return adata
 
