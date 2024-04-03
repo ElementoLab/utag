@@ -230,9 +230,8 @@ def _parallel_message_pass(
 
 
 def custom_message_passing(adata: AnnData, mode: str = "l1_norm") -> AnnData:
-    from scipy.linalg import sqrtm
-    from scipy.sparse import eye_array
-    import logging
+    # from scipy.linalg import sqrtm
+    # import logging
     if mode == "l1_norm":
         A = adata.obsp["spatial_connectivities"]
         from sklearn.preprocessing import normalize
@@ -241,7 +240,7 @@ def custom_message_passing(adata: AnnData, mode: str = "l1_norm") -> AnnData:
         # Plain A_mod multiplication
         A = adata.obsp["spatial_connectivities"]
         affinity = A
-    logging.info(type(affinity))
+    # logging.info(type(affinity))
     adata.X = affinity @ adata.X
     return adata
 
