@@ -23,7 +23,7 @@ There are no specific hardware requirements.
 
 Software requirements:
 - UTAG has been tested on Mac OS, Linux, and Windows [WSL](https://docs.microsoft.com/en-us/windows/wsl/about) (Windows Subsystem for Linux).
-- Python 3.7+ (tested on 3.8.2)
+- Python 3.9+ (tested on 3.9.19)
 - Python packages (automatically installed by `pip`):
   - numpy
   - pandas
