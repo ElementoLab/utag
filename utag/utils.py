@@ -5,19 +5,20 @@ Helper functions used throughout the package.
 """
 
 import typing as tp
+from pathlib import Path
 
 import numpy as np
 import scipy
 import pandas as pd
 import networkx as nx
 
-from utag.types import Array, Graph, DataFrame, Path, AnnData
+from utag.types import Array, Graph, DataFrame, AnnData
 
 
 def domain_connectivity(
     adata: AnnData,
-    slide_key: str = 'Slide',
-    domain_key: str = 'UTAG Label',
+    slide_key: str = "Slide",
+    domain_key: str = "UTAG Label",
 ) -> AnnData:
     import squidpy as sq
     import numpy as np
@@ -25,15 +26,23 @@ def domain_connectivity(
 
     order = sorted(adata.obs[domain_key].unique().tolist())
 
-    global_pairwise_connection = pd.DataFrame(np.zeros(shape = (len(order),len(order))), index = order, columns = order)
+    global_pairwise_connection = pd.DataFrame(
+        np.zeros(shape=(len(order), len(order))), index=order, columns=order
+    )
     for slide in tqdm(adata.obs[slide_key].unique()):
         adata_batch = adata[adata.obs[slide_key] == slide].copy()
 
-        sq.gr.spatial_neighbors(adata_batch, radius = 40, coord_type = 'generic')
+        sq.gr.spatial_neighbors(adata_batch, radius=40, coord_type="generic")
 
-        pairwise_connection = pd.DataFrame(index = order, columns = order)
+        pairwise_connection = pd.DataFrame(index=order, columns=order)
         for label in adata_batch.obs[domain_key].unique():
-            self_connection = adata_batch[adata_batch.obs[domain_key] == label].obsp['spatial_connectivities'].todense().sum()/2
+            self_connection = (
+                adata_batch[adata_batch.obs[domain_key] == label]
+                .obsp["spatial_connectivities"]
+                .todense()
+                .sum()
+                / 2
+            )
             self_connection = self_connection.round()
 
             pairwise_connection.loc[label, label] = self_connection
@@ -41,21 +50,34 @@ def domain_connectivity(
         for label in adata_batch.obs[domain_key].unique():
             for label2 in adata_batch.obs[domain_key].unique():
                 if label != label2:
-                    pairwise = adata_batch[adata_batch.obs[domain_key].isin([label, label2])].obsp['spatial_connectivities'].todense().sum()/2
+                    pairwise = (
+                        adata_batch[adata_batch.obs[domain_key].isin([label, label2])]
+                        .obsp["spatial_connectivities"]
+                        .todense()
+                        .sum()
+                        / 2
+                    )
                     pairwise = pairwise.round()
-                    pairwise_connection.loc[label, label2] = pairwise - pairwise_connection.loc[label, label] - pairwise_connection.loc[label2, label2]
-                    pairwise_connection.loc[label2, label] = pairwise_connection.loc[label, label2]
+                    pairwise_connection.loc[label, label2] = (
+                        pairwise
+                        - pairwise_connection.loc[label, label]
+                        - pairwise_connection.loc[label2, label2]
+                    )
+                    pairwise_connection.loc[label2, label] = pairwise_connection.loc[
+                        label, label2
+                    ]
 
         pairwise_connection = pairwise_connection.fillna(0)
         global_pairwise_connection = global_pairwise_connection + pairwise_connection
-    adata.uns[f'{domain_key}_domain_adjacency_matrix'] =  global_pairwise_connection
+    adata.uns[f"{domain_key}_domain_adjacency_matrix"] = global_pairwise_connection
     return adata
+
 
 def celltype_connectivity(
     adata: AnnData,
-    slide_key: str = 'Slide',
-    domain_key: str = 'UTAG Label',
-    celltype_key: str = 'cluster_0.5_label',
+    slide_key: str = "Slide",
+    domain_key: str = "UTAG Label",
+    celltype_key: str = "cluster_0.5_label",
 ) -> AnnData:
     import squidpy as sq
     import numpy as np
@@ -64,18 +86,28 @@ def celltype_connectivity(
     global_pairwise_utag = dict()
     for label in adata.obs[domain_key].unique():
         cell_types = adata.obs[celltype_key].unique().tolist()
-        global_pairwise_utag[label] = pd.DataFrame(np.zeros(shape = (len(cell_types),len(cell_types))), index = cell_types, columns = cell_types)
+        global_pairwise_utag[label] = pd.DataFrame(
+            np.zeros(shape=(len(cell_types), len(cell_types))),
+            index=cell_types,
+            columns=cell_types,
+        )
 
     for slide in tqdm(adata.obs[slide_key].unique()):
-        adata_batch = adata[adata.obs[slide_key] == slide].copy()    
-        sq.gr.spatial_neighbors(adata_batch, radius = 40, coord_type = 'generic')
+        adata_batch = adata[adata.obs[slide_key] == slide].copy()
+        sq.gr.spatial_neighbors(adata_batch, radius=40, coord_type="generic")
 
         for label in adata.obs[domain_key].unique():
             adata_batch2 = adata_batch[adata_batch.obs[domain_key] == label].copy()
-            pairwise_connection = pd.DataFrame(index = cell_types, columns = cell_types)
+            pairwise_connection = pd.DataFrame(index=cell_types, columns=cell_types)
 
             for cell_type1 in adata_batch2.obs[celltype_key].unique():
-                self_connection = adata_batch2[adata_batch2.obs[celltype_key] == cell_type1].obsp['spatial_connectivities'].todense().sum()/2
+                self_connection = (
+                    adata_batch2[adata_batch2.obs[celltype_key] == cell_type1]
+                    .obsp["spatial_connectivities"]
+                    .todense()
+                    .sum()
+                    / 2
+                )
                 self_connection = self_connection.round()
 
                 pairwise_connection.loc[cell_type1, cell_type1] = self_connection
@@ -83,22 +115,40 @@ def celltype_connectivity(
             for cell_type1 in adata_batch.obs[celltype_key].unique():
                 for cell_type2 in adata_batch2.obs[celltype_key].unique():
                     if cell_type1 != cell_type2:
-                        pairwise = adata_batch2[adata_batch2.obs[celltype_key].isin([cell_type1, cell_type2])].obsp['spatial_connectivities'].todense().sum()/2
+                        pairwise = (
+                            adata_batch2[
+                                adata_batch2.obs[celltype_key].isin(
+                                    [cell_type1, cell_type2]
+                                )
+                            ]
+                            .obsp["spatial_connectivities"]
+                            .todense()
+                            .sum()
+                            / 2
+                        )
                         pairwise = pairwise.round()
-                        pairwise_connection.loc[cell_type1, cell_type2] = pairwise - pairwise_connection.loc[cell_type1, cell_type1] - pairwise_connection.loc[cell_type2, cell_type2]
-                        pairwise_connection.loc[cell_type2, cell_type1] = pairwise_connection.loc[cell_type1, cell_type2]
+                        pairwise_connection.loc[cell_type1, cell_type2] = (
+                            pairwise
+                            - pairwise_connection.loc[cell_type1, cell_type1]
+                            - pairwise_connection.loc[cell_type2, cell_type2]
+                        )
+                        pairwise_connection.loc[
+                            cell_type2, cell_type1
+                        ] = pairwise_connection.loc[cell_type1, cell_type2]
 
             pairwise_connection = pairwise_connection.fillna(0)
-            global_pairwise_utag[label] = global_pairwise_utag[label] + pairwise_connection
-            
-    adata.uns[f'{domain_key}_celltype_adjacency_matrix'] = global_pairwise_utag
+            global_pairwise_utag[label] = (
+                global_pairwise_utag[label] + pairwise_connection
+            )
+
+    adata.uns[f"{domain_key}_celltype_adjacency_matrix"] = global_pairwise_utag
     return adata
 
 
 def slide_connectivity(
     adata: AnnData,
-    slide_key: str = 'roi',
-    domain_key: str = 'UTAG Label',
+    slide_key: str = "roi",
+    domain_key: str = "UTAG Label",
 ) -> dict():
     import squidpy as sq
     import numpy as np
@@ -106,15 +156,21 @@ def slide_connectivity(
 
     order = sorted(adata.obs[domain_key].unique().tolist())
     slide_connection = dict()
-    
+
     for slide in tqdm(adata.obs[slide_key].unique()):
         adata_batch = adata[adata.obs[slide_key] == slide].copy()
 
-        sq.gr.spatial_neighbors(adata_batch, radius = 40, coord_type = 'generic')
+        sq.gr.spatial_neighbors(adata_batch, radius=40, coord_type="generic")
 
-        pairwise_connection = pd.DataFrame(index = order, columns = order)
+        pairwise_connection = pd.DataFrame(index=order, columns=order)
         for label in adata_batch.obs[domain_key].unique():
-            self_connection = adata_batch[adata_batch.obs[domain_key] == label].obsp['spatial_connectivities'].todense().sum()/2
+            self_connection = (
+                adata_batch[adata_batch.obs[domain_key] == label]
+                .obsp["spatial_connectivities"]
+                .todense()
+                .sum()
+                / 2
+            )
             self_connection = self_connection.round()
 
             pairwise_connection.loc[label, label] = self_connection
@@ -122,17 +178,32 @@ def slide_connectivity(
         for label in adata_batch.obs[domain_key].unique():
             for label2 in adata_batch.obs[domain_key].unique():
                 if label != label2:
-                    pairwise = adata_batch[adata_batch.obs[domain_key].isin([label, label2])].obsp['spatial_connectivities'].todense().sum()/2
+                    pairwise = (
+                        adata_batch[adata_batch.obs[domain_key].isin([label, label2])]
+                        .obsp["spatial_connectivities"]
+                        .todense()
+                        .sum()
+                        / 2
+                    )
                     pairwise = pairwise.round()
-                    pairwise_connection.loc[label, label2] = pairwise - pairwise_connection.loc[label, label] - pairwise_connection.loc[label2, label2]
-                    pairwise_connection.loc[label2, label] = pairwise_connection.loc[label, label2]
+                    pairwise_connection.loc[label, label2] = (
+                        pairwise
+                        - pairwise_connection.loc[label, label]
+                        - pairwise_connection.loc[label2, label2]
+                    )
+                    pairwise_connection.loc[label2, label] = pairwise_connection.loc[
+                        label, label2
+                    ]
 
         pairwise_connection = pairwise_connection.fillna(0)
-        pairwise_connection = pairwise_connection.loc[(pairwise_connection!=0).any(1), (pairwise_connection!=0).any(0)]
-        #pairwise_connection = pairwise_connection.dropna(axis = 1)
+        pairwise_connection = pairwise_connection.loc[
+            (pairwise_connection != 0).any(1), (pairwise_connection != 0).any(0)
+        ]
+        # pairwise_connection = pairwise_connection.dropna(axis = 1)
         slide_connection[slide] = pairwise_connection
-        
+
     return slide_connection
+
 
 def measure_per_domain_cell_type_colocalization(
     adata: AnnData,
@@ -141,6 +212,7 @@ def measure_per_domain_cell_type_colocalization(
     n_iterations: int = 100,
 ):
     import squidpy as sq
+
     a_ = adata.copy()
     sq.gr.spatial_neighbors(a_, radius=max_dist, coord_type="generic")
 
@@ -169,11 +241,11 @@ def correct_interaction_background_random(
         nx.set_node_attributes(g2, shuffled_attr.to_dict(), name=attribute)
         rf, rl = nx.linalg.attrmatrix.attr_matrix(g2, node_attr=attribute)
         rl = pd.Series(rl, dtype=freqs.index.dtype)
-        shuffled_freqs.append(pd.DataFrame(rf, index=rl, columns=rl))#.fillna(0) + 1)
+        shuffled_freqs.append(pd.DataFrame(rf, index=rl, columns=rl))  # .fillna(0) + 1)
     shuffled_freq = pd.concat(shuffled_freqs)
     shuffled_freq = shuffled_freq.groupby(level=0).sum()
     shuffled_freq = shuffled_freq.fillna(0) + 1
-    
+
     fl = np.log((freqs / freqs.values.sum()))
     sl = np.log((shuffled_freq / shuffled_freq.values.sum()))
     # make sure both contain all edges/nodes
@@ -185,46 +257,66 @@ def correct_interaction_background_random(
 def evaluate_clustering(
     adata: AnnData,
     cluster_keys: Array,
-    celltype_label: str = 'celltype',
-    slide_key: str = 'roi',
-    metrics: Array = ['entropy', 'cluster_number', 'silhouette_score', 'connectivity']
+    celltype_label: str = "celltype",
+    slide_key: str = "roi",
+    metrics: Array = ["entropy", "cluster_number", "silhouette_score", "connectivity"],
 ) -> DataFrame:
-    
     if type(cluster_keys) == str:
         cluster_keys = [cluster_keys]
     if type(metrics) == str:
         metrics = [metrics]
-    
-    cluster_loss = pd.DataFrame(index = metrics, columns = cluster_keys)
+
+    cluster_loss = pd.DataFrame(index=metrics, columns=cluster_keys)
     from tqdm import tqdm
-    
+
     for metric in metrics:
-        print(f'Evaluating Cluster {metric}')
-        for cluster in tqdm(cluster_keys):    
-            assert(metric in ['entropy', 'cluster_number', 'silhouette_score', 'connectivity'])
-            
-            if metric == 'entropy':
+        print(f"Evaluating Cluster {metric}")
+        for cluster in tqdm(cluster_keys):
+            assert metric in [
+                "entropy",
+                "cluster_number",
+                "silhouette_score",
+                "connectivity",
+            ]
+
+            if metric == "entropy":
                 from scipy.stats import entropy
-                distribution = adata.obs.groupby([celltype_label, cluster]).count()[slide_key].reset_index().pivot(index = cluster, columns = celltype_label, values = slide_key)
-                cluster_entropy = distribution.apply(entropy, axis = 1).sort_values().mean()
-                
+
+                distribution = (
+                    adata.obs.groupby([celltype_label, cluster])
+                    .count()[slide_key]
+                    .reset_index()
+                    .pivot(index=cluster, columns=celltype_label, values=slide_key)
+                )
+                cluster_entropy = distribution.apply(entropy, axis=1).sort_values().mean()
+
                 cluster_loss.loc[metric, cluster] = cluster_entropy
-            elif metric == 'cluster_number':
-                
+            elif metric == "cluster_number":
                 cluster_loss.loc[metric, cluster] = len(adata.obs[cluster].unique())
-            elif metric == 'silhouette_score':
-                
+            elif metric == "silhouette_score":
                 from sklearn.metrics import silhouette_score
-                cluster_loss.loc[metric, cluster] = silhouette_score(adata.X, labels = adata.obs[cluster])
-            elif metric == 'connectivity':
-                global_pairwise_connection = domain_connectivity(adata = adata, slide_key = slide_key, domain_key = cluster)
-                inter_spatial_connectivity = np.log(np.diag(global_pairwise_connection).sum() / (global_pairwise_connection.sum().sum() - np.diag(global_pairwise_connection).sum()))
+
+                cluster_loss.loc[metric, cluster] = silhouette_score(
+                    adata.X, labels=adata.obs[cluster]
+                )
+            elif metric == "connectivity":
+                global_pairwise_connection = domain_connectivity(
+                    adata=adata, slide_key=slide_key, domain_key=cluster
+                )
+                inter_spatial_connectivity = np.log(
+                    np.diag(global_pairwise_connection).sum()
+                    / (
+                        global_pairwise_connection.sum().sum()
+                        - np.diag(global_pairwise_connection).sum()
+                    )
+                )
 
                 cluster_loss.loc[metric, cluster] = inter_spatial_connectivity
     return cluster_loss
 
+
 def to_uint(x: Array, base: int = 8) -> Array:
-    return (x * (2 ** base - 1)).astype(f"uint{base}")
+    return (x * (2**base - 1)).astype(f"uint{base}")
 
 
 def to_float(x: Array, base: int = 32) -> Array:
@@ -281,63 +373,96 @@ def array_to_graph(
 
     return g
 
+
 def compute_and_draw_network(
     adata,
-    slide_key: str = 'roi',
-    node_key: str = 'UTAG Label',
-    figsize: tuple = (11,11),
+    slide_key: str = "roi",
+    node_key: str = "UTAG Label",
+    figsize: tuple = (11, 11),
     dpi: int = 100,
     font_size: int = 12,
     node_size_min: int = 1000,
     node_size_max: int = 3000,
     edge_weight: float = 10,
     log_transform: bool = True,
-    ax = None
+    ax=None,
 ) -> nx.Graph:
     from utag.utils import domain_connectivity
     import networkx as nx
     import matplotlib.pyplot as plt
-    
-    adjacency_matrix = domain_connectivity(adata = adata, slide_key = slide_key, domain_key = node_key)
+
+    adjacency_matrix = domain_connectivity(
+        adata=adata, slide_key=slide_key, domain_key=node_key
+    )
     s1 = adata.obs.groupby(node_key).count()
     s1 = s1[s1.columns[0]]
     node_size = s1.values
-    node_size = (node_size - node_size.min()) / (node_size.max() - node_size.min()) * (node_size_max - node_size_min) + node_size_min
-    
+    node_size = (node_size - node_size.min()) / (node_size.max() - node_size.min()) * (
+        node_size_max - node_size_min
+    ) + node_size_min
+
     if ax == None:
-        fig = plt.figure(figsize = figsize, dpi = dpi)
+        fig = plt.figure(figsize=figsize, dpi=dpi)
     G = nx.from_numpy_matrix(np.matrix(adjacency_matrix), create_using=nx.Graph)
-    G = nx.relabel.relabel_nodes(G, {i: label for i, label in enumerate(adjacency_matrix.index)})
+    G = nx.relabel.relabel_nodes(
+        G, {i: label for i, label in enumerate(adjacency_matrix.index)}
+    )
     pos = nx.circular_layout(G)
 
-    edges, weights = zip(*nx.get_edge_attributes(G,'weight').items())
+    edges, weights = zip(*nx.get_edge_attributes(G, "weight").items())
     if log_transform:
-        weights = np.log(np.array(list(weights))+1)
+        weights = np.log(np.array(list(weights)) + 1)
     else:
         weights = np.array(list(weights))
-    weights = (weights - weights.min()) / (weights.max() - weights.min()) * edge_weight + 0.2
+    weights = (weights - weights.min()) / (
+        weights.max() - weights.min()
+    ) * edge_weight + 0.2
     weights = tuple(weights.tolist())
-    
+
     if ax:
-        nx.draw(G, pos, node_color='w', edgelist=edges, edge_color=weights, width=weights, edge_cmap=plt.cm.YlOrRd, with_labels=True, font_size = font_size, node_size = node_size, ax = ax)
+        nx.draw(
+            G,
+            pos,
+            node_color="w",
+            edgelist=edges,
+            edge_color=weights,
+            width=weights,
+            edge_cmap=plt.cm.YlOrRd,
+            with_labels=True,
+            font_size=font_size,
+            node_size=node_size,
+            ax=ax,
+        )
     else:
-        nx.draw(G, pos, node_color='w', edgelist=edges, edge_color=weights, width=weights, edge_cmap=plt.cm.YlOrRd, with_labels=True, font_size = font_size, node_size = node_size)
-    #nx.draw(G, pos, cmap = plt.cm.tab10, node_color = range(8), edgelist=edges, edge_color=weights, width=3, edge_cmap=plt.cm.coolwarm, with_labels=True, font_size = 14, node_size = 1000)
+        nx.draw(
+            G,
+            pos,
+            node_color="w",
+            edgelist=edges,
+            edge_color=weights,
+            width=weights,
+            edge_cmap=plt.cm.YlOrRd,
+            with_labels=True,
+            font_size=font_size,
+            node_size=node_size,
+        )
+    # nx.draw(G, pos, cmap = plt.cm.tab10, node_color = range(8), edgelist=edges, edge_color=weights, width=3, edge_cmap=plt.cm.coolwarm, with_labels=True, font_size = 14, node_size = 1000)
 
     if ax == None:
         ax = plt.gca()
-    
-    color_key = node_key + '_colors'
+
+    color_key = node_key + "_colors"
     if color_key in adata.uns:
         ax.collections[0].set_edgecolor(adata.uns[color_key])
     else:
-        ax.collections[0].set_edgecolor('lightgray')
+        ax.collections[0].set_edgecolor("lightgray")
     ax.collections[0].set_linewidth(3)
-    ax.set_xlim([1.1*x for x in ax.get_xlim()])
-    ax.set_ylim([1.1*y for y in ax.get_ylim()])
+    ax.set_xlim([1.1 * x for x in ax.get_xlim()])
+    ax.set_ylim([1.1 * y for y in ax.get_ylim()])
 
     return G
-    
+
+
 def get_adjacency_matrix(g: Graph) -> Array:
     return nx.adjacency_matrix(g, weight="connectivity").todense()
 
@@ -405,13 +530,12 @@ def mask_to_labelme(
     from imantics import Mask
     from shapely.geometry import Polygon
 
-    output_file = filename.replace_(".tif", ".json")
+    output_file = filename.with_suffix(".json")
     if overwrite or output_file.exists():
         return
     polygons = Mask(labeled_image).polygons()
     shapes = list()
     for point in polygons.points:
-
         if not simplify:
             poly = np.asarray(point).tolist()
         else:
