@@ -194,10 +194,9 @@ Kim, J., Rustam, S., Mosquera, J.M. et al. Unsupervised discovery of tissue arch
 ```bibtex
 @article{kim2022unsupervised,
   title={Unsupervised discovery of tissue architecture in multiplexed imaging},
-  author={Kim, Jina and Rustam, Saman and Mosquera, Jos{\'e} Manuel and Zhang, Yiqun and Chung, Junyue and Chen, Hao and Angelo, Joseph and Elemento, Olivier},
+  author={Kim, Junbum and Rustam, Samir and Mosquera, Juan Miguel and Shayhiev, Renat and Rendeiro, Andre F and Elemento, Olivier},
   journal={Nature Methods},
   volume={19},
-  number={12},
   pages={1653--1661},
   year={2022},
   publisher={Nature Publishing Group}
