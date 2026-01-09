@@ -1,9 +1,8 @@
 # Unsupervised discovery of tissue architechture with graphs (UTAG)
-[![Zenodo badge](https://zenodo.org/badge/doi/10.1038/s41592-022-01657-2.svg)](https://doi.org/10.1038/s41592-022-01657-2) ⬅️ read the published article here <br>
-[![Biorxiv badge](https://zenodo.org/badge/doi/10.1101/2022.03.15.484534.svg)](https://doi.org/10.1101/2022.03.15.484534) ⬅️ read the preprint here <br>
-[![Zenodo badge](https://zenodo.org/badge/doi/10.5281/zenodo.6376767.svg)](https://doi.org/10.5281/zenodo.6376767) ⬅️ Preprocessed Multiplexed Image Data and UTAG results <br>
- 
- 
+[![Nature Badge](https://img.shields.io/static/v1?label=DOI&message=10.1038/s41592-022-01657-2&color=blue)](https://doi.org/10.1038/s41592-022-01657-2) ⬅️ read the published article here <br>
+[![Biorxiv Badge](https://img.shields.io/static/v1?label=DOI&message=10.1101/2022.03.15.484534&color=red)](https://doi.org/10.1101/2022.03.15.484534) ⬅️ read the preprint here <br>
+[![Zenodo Badge](https://img.shields.io/static/v1?label=DOI&message=10.5281/zenodo.6376767&color=527ea9)](https://doi.org/10.5281/zenodo.6376767) ⬅️ Preprocessed Multiplexed Image Data and UTAG results <br>
+
 This package implements segmentation of multiplexed imaging data into microanatomical domains.
 Multiplexed imaging data types are typically imaging mass cytometry (IMC), co-detection by indexing (CODEX), multiplexed ion beam imaging by time of flight (MIBI-TOF), cyclic immunofluorescence (CyCIF), and others.
 The package also provides functions for the downstream analysis of the detected micro-anatomical structure.
@@ -13,9 +12,15 @@ The package also provides functions for the downstream analysis of the detected 
 
 ### Install from github
 
+With pip:
 ```bash
 pip install git+https://github.com/ElementoLab/utag.git@main
 ```
+With [`uv`](https://docs.astral.sh/uv/):
+```bash
+uv add git+https://github.com/ElementoLab/utag
+```
+
 Installation should take less than 10 seconds.
 
 #### Requirements
@@ -23,23 +28,7 @@ There are no specific hardware requirements.
 
 Software requirements:
 - UTAG has been tested on Mac OS, Linux, and Windows [WSL](https://docs.microsoft.com/en-us/windows/wsl/about) (Windows Subsystem for Linux).
-- Python 3.9+ (tested on 3.9.19)
-- Python packages (automatically installed by `pip`):
-  - numpy
-  - pandas
-  - anndata
-  - scanpy
-  - parc
-  - squidpy
-  - scipy
-  - matplotlib
-  - tqdm
-  - networkx
-  - parmap
-  - scikit-learn
-  - setuptools_scm (may require manual installation for MacOS through pip)
-
-Specific versions of Python packages have been pinned to the [setup.cfg](setup.cfg) file.
+- Python 3.12+ (tested on 3.12)
 
 ## Tutorial
 Check out new [tutorial](documentation/UTAG%20Tutorial.ipynb) for how to run and visualize results with UTAG on your own data with minimal required input (numeric cell feature matrix and xy coordinates).
@@ -137,7 +126,7 @@ For more detailed usage of the package and downstream analysis, please refer to 
 
 ## Running UTAG on R
 
-To make UTAG available to R users, we port the python code to using the `reticulate` package. The code was tested under after installing `UTAG` natively for python 3.8.10 and under conda environment with python 3.10.4, on Ubuntu 20.04.3 LTS and R 4.2.0.
+To make UTAG available to R users, we port the python code to using the `reticulate` package.
 
 Nonetheless, we highly recommend that users use our package in python for more involved analysis as the package has been developed and tested more thoroughly in python.
 
@@ -147,7 +136,6 @@ library(reticulate)
 
 # grab python interpreter
 use_python('/usr/bin/python3') # in case UTAG is installed on native python
-# use_condaenv('utag') # in case UTAG is installed using conda
 # use_virtualevn('utag') # in case UTAG is installed under virtualenv
 
 
@@ -191,4 +179,26 @@ pytest --pyargs utag
 or before by:
 ```bash
 pytest utag/tests/utag_test.py
+```
+
+# License
+This project is licensed under the GPLv3+ license. Please see the [LICENSE](LICENSE) file for details.
+
+# Citation
+If you use UTAG in your research, please cite:
+
+```
+Kim, J., Rustam, S., Mosquera, J.M. et al. Unsupervised discovery of tissue architecture in multiplexed imaging. Nat Methods 19, 1653–1661 (2022). https://doi.org/10.1038/s41592-022-01657-2
+```
+
+```bibtex
+@article{kim2022unsupervised,
+  title={Unsupervised discovery of tissue architecture in multiplexed imaging},
+  author={Kim, Junbum and Rustam, Samir and Mosquera, Juan Miguel and Shayhiev, Renat and Rendeiro, Andre F and Elemento, Olivier},
+  journal={Nature Methods},
+  volume={19},
+  pages={1653--1661},
+  year={2022},
+  publisher={Nature Publishing Group}
+}
 ```

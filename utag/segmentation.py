@@ -1,23 +1,20 @@
 import typing as tp
-import warnings
-import os
 
 import scanpy as sc
 import squidpy as sq
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
 from tqdm import tqdm
 import anndata
 import parmap
 
-from utag.types import Path, Array, AnnData
+from utag.types import Array, AnnData
 from utag.utils import sparse_matrix_dstack
 
 
 def utag(
     adata: AnnData,
-    channels_to_use: tp.Sequence[str] = None,
+    channels_to_use: tp.Sequence[str] | None = None,
     slide_key: tp.Optional[str] = "Slide",
     save_key: str = "UTAG Label",
     filter_by_variance: bool = False,
@@ -30,10 +27,10 @@ def utag(
     apply_clustering: bool = True,
     clustering_method: tp.Sequence[str] = ["leiden", "parc", "kmeans"],
     resolutions: tp.Sequence[float] = [0.05, 0.1, 0.3, 1.0],
-    leiden_kwargs: tp.Dict[str, tp.Any] = None,
-    parc_kwargs: tp.Dict[str, tp.Any] = None,
+    leiden_kwargs: tp.Dict[str, tp.Any] | None = None,
+    parc_kwargs: tp.Dict[str, tp.Any] | None = None,
     parallel: bool = True,
-    processes: int = None,
+    processes: int | None = None,
 ) -> AnnData:
     """
     Discover tissue architechture in single-cell imaging data
@@ -176,7 +173,6 @@ def utag(
             sc.tl.umap(ad_result, **umap_kwargs)
 
         for resolution in tqdm(resolutions):
-
             res_key1 = save_key + "_leiden_" + str(resolution)
             res_key2 = save_key + "_parc_" + str(resolution)
             res_key3 = save_key + "_kmeans_" + str(resolution)
@@ -235,6 +231,7 @@ def custom_message_passing(adata: AnnData, mode: str = "l1_norm") -> AnnData:
     if mode == "l1_norm":
         A = adata.obsp["spatial_connectivities"]
         from sklearn.preprocessing import normalize
+
         affinity = normalize(A, axis=1, norm="l1")
     else:
         # Plain A_mod multiplication
