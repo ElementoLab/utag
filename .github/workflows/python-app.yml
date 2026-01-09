@@ -1,53 +1,33 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
 name: Python application UTAG test automation
-
 on:
   push:
-    branches: [ main, dev ]
+    branches: [main, dev]
   pull_request:
-    branches: [ main, dev ]
-
+    branches: [main, dev]
 permissions:
   contents: read
-
 jobs:
   build:
-    name: every OS
+    name: Test on ${{ matrix.os }} / py${{ matrix.python-version }}
     strategy:
       matrix:
-        # run 2 copies of the current job in parallel
-        # and they will load balance all specs
-        os: ['ubuntu-latest','macos-latest'] #,  'windows-latest']
-        python-version: [3.9.19, 3.10.11]
+        os: ['ubuntu-latest', 'macos-latest']
+        python-version: ['3.12', '3.13']
       fail-fast: false
-        
     runs-on: ${{ matrix.os }}
-        
     steps:
-      # Checkout the latest code from the repo
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-      # Display the Python version being used
-    - name: Display Python version
-      run: python -c "import sys; print(sys.version)"
-      # Install the package using the setup.py
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8 pytest
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        pip install .
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-    - name: Test with pytest
-      run: |
-        pytest utag/tests/utag_test.py
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          enable-cache: true
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync --group test
+
+      - name: Test with pytest
+        run: uv run pytest utag/tests/utag_test.py
