@@ -15,22 +15,24 @@ keywords = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
     "Development Status :: 3 - Beta",
     "Typing :: Typed",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 license = "GPL-3.0-or-later"
 
-requires-python = ">=3.12"
+requires-python = ">=3.11,<3.15"
 dependencies = [
     "numpy",
     "pandas",
     "anndata",
-    "scanpy>1.11",
+    "scanpy>=1.9.3,<1.12",
     "parc",
-    "squidpy>=1.7",
+    "squidpy>=1.4",
     "scipy",
     "matplotlib",
     "tqdm",

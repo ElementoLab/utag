@@ -10,25 +10,64 @@ The package also provides functions for the downstream analysis of the detected 
 
 ## Getting Started
 
-### Install from github
+### Recommended environment
+
+To avoid dependency conflicts (especially between **squidpy** and **scanpy**), use:
+
+- **Python 3.11, 3.12, 3.13, or 3.14** (tested in CI on all four)
+- **scanpy**: `>=1.9.3,<1.12` (scanpy 1.12+ removes an internal API that squidpy relies on)
+- **squidpy**: `>=1.4`
+
+Example with a new environment:
+
+```bash
+# Using conda (pick 3.11–3.14)
+conda create -n utag python=3.12
+conda activate utag
+
+# Or using venv
+python3.12 -m venv .venv
+source .venv/bin/activate   # Linux/macOS
+# .venv\Scripts\activate   # Windows
+```
+
+### Install from GitHub
 
 With pip:
 ```bash
 pip install git+https://github.com/ElementoLab/utag.git@main
 ```
+
+To force compatible dependency versions (if you see an `ImportError` about `_set_default_colors_for_categorical_obs`), install deps first, then UTAG:
+
+```bash
+pip install -r requirements-environment.txt
+pip install -e .   # from a clone, or:
+pip install git+https://github.com/ElementoLab/utag.git@main
+```
+
 With [`uv`](https://docs.astral.sh/uv/):
 ```bash
 uv add git+https://github.com/ElementoLab/utag
 ```
 
-Installation should take less than 10 seconds.
+Installation should take less than 10 seconds when dependencies are already compatible.
 
 #### Requirements
+
 There are no specific hardware requirements.
 
 Software requirements:
+
 - UTAG has been tested on Mac OS, Linux, and Windows [WSL](https://docs.microsoft.com/en-us/windows/wsl/about) (Windows Subsystem for Linux).
-- Python 3.12+ (tested on 3.12)
+- **Python 3.11–3.14** (CI runs tests on 3.11, 3.12, 3.13, and 3.14 on Ubuntu and macOS). If you see `ImportError` from squidpy/scanpy or deprecation warnings, use scanpy below 1.12 and squidpy 1.4 or newer.
+
+#### Troubleshooting
+
+| Symptom | Cause | Fix |
+|--------|--------|-----|
+| `ImportError: cannot import name '_set_default_colors_for_categorical_obs' from 'scanpy.plotting._utils'` | Incompatible scanpy/squidpy versions (e.g. scanpy 1.12+ with older squidpy). | Use scanpy below 1.12 and squidpy 1.4 or newer (Python 3.11–3.14). Run `pip install -r requirements-environment.txt` then reinstall UTAG. |
+| Dask/`pkg_resources` deprecation warnings | Bleeding-edge Python or old setuptools. | Use a supported Python (3.11–3.14) and a current setuptools. |
 
 ## Tutorial
 Check out new [tutorial](documentation/UTAG%20Tutorial.ipynb) for how to run and visualize results with UTAG on your own data with minimal required input (numeric cell feature matrix and xy coordinates).
