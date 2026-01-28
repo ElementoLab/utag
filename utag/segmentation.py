@@ -31,6 +31,7 @@ def utag(
     parc_kwargs: tp.Dict[str, tp.Any] | None = None,
     parallel: bool = True,
     processes: int | None = None,
+    return_copy: bool = True,
 ) -> AnnData:
     """
     Discover tissue architechture in single-cell imaging data
@@ -100,20 +101,27 @@ def utag(
     processes: int
         Number of processes to use in parallel.
         Default is to use all available (-1).
+    return_copy: bool
+        If True, run the pipeline on a copy of adata and return the copy.
+        If False, run on adata in place and return it.
+        Default is True.
 
     Returns
     -------
     adata: AnnData
         AnnData object with UTAG domain predictions for each cell in adata.obs, column `save_key`.
     """
-    ad = adata.copy()
+    # Work on a copy or the input object depending on return_copy.
+    ad = adata.copy() if return_copy else adata
 
+    # Optional variable subsetting and variance filtering.
     if channels_to_use:
         ad = ad[:, channels_to_use]
 
     if filter_by_variance:
         ad = low_variance_filter(ad)
 
+    # Normalise and validate clustering_method (list or str -> upper-case).
     if isinstance(clustering_method, list):
         clustering_method = [m.upper() for m in clustering_method]
     elif isinstance(clustering_method, str):
@@ -125,12 +133,16 @@ def utag(
         return
     assert all(m in ["LEIDEN", "PARC", "KMEANS"] for m in clustering_method)
 
-    if "PARC" in clustering_method:
-        from parc import PARC  # early fail if not available
-    if "KMEANS" in clustering_method:
-        from sklearn.cluster import KMeans
+    # Lazy-load clustering deps only when apply_clustering is True.
+    if apply_clustering:
+        if "PARC" in clustering_method:
+            from parc import PARC
+        if "KMEANS" in clustering_method:
+            from sklearn.cluster import KMeans
 
     print("Applying UTAG Algorithm...")
+
+    # Message passing: per-slide (parallel) or global.
     if slide_key:
         ads = [
             ad[ad.obs[slide_key] == slide].copy() for slide in ad.obs[slide_key].unique()
@@ -158,7 +170,9 @@ def utag(
         sq.gr.spatial_neighbors(ad, radius=max_dist, coord_type="generic", set_diag=True)
         ad_result = custom_message_passing(ad, mode=normalization_mode)
 
+    # Optional clustering: PCA, neighbors, UMAP, then Leiden/PARC/KMeans per resolution.
     if apply_clustering:
+        # Cap n_comps by feature count when needed.
         if "n_comps" in pca_kwargs:
             if pca_kwargs["n_comps"] > ad_result.shape[1]:
                 pca_kwargs["n_comps"] = ad_result.shape[1] - 1
@@ -172,6 +186,7 @@ def utag(
             print("Running UMAP on Input Dataset...")
             sc.tl.umap(ad_result, **umap_kwargs)
 
+        # Run each requested clustering method at each resolution.
         for resolution in tqdm(resolutions):
             res_key1 = save_key + "_leiden_" + str(resolution)
             res_key2 = save_key + "_parc_" + str(resolution)
@@ -186,8 +201,6 @@ def utag(
                 add_probabilities_to_centroid(ad_result, res_key1)
 
             if "PARC" in clustering_method:
-                from parc import PARC
-
                 print(f"Applying PARC Clustering at Resolution: {resolution}...")
 
                 kwargs = dict(random_seed=1, small_pop=1000)
@@ -210,7 +223,7 @@ def utag(
                 ad_result.obs[res_key3] = pd.Categorical(kmeans.labels_.astype(str))
                 add_probabilities_to_centroid(ad_result, res_key3)
 
-    return ad_result
+    return ad_result  # Copy if return_copy else modified adata.
 
 
 def _parallel_message_pass(
